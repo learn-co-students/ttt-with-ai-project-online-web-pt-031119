@@ -1,7 +1,9 @@
 require_relative './board.rb'
 require_relative './players/human.rb'
+require_relative './players/computer.rb'
 
 class Game
+  attr_accessor :board, :player_1, :player_2
   WIN_COMBINATIONS = [
     [0,1,2],
     [3,4,5],
@@ -19,31 +21,50 @@ class Game
     @board = board
   end
 
-  def board=(board)
-    @board = board
-    return @board
+  def comp_v_comp
+    @game = Game.new(player_1 = Players::Computer.new("X"),player_2=Players::Computer.new("O"))
+    @game.play
   end
 
-  def board
-    return @board
+  def p_v_comp
+    puts "X or O?"
+    playToken = gets.chomp()
+    if playToken == "X"
+      @game = Game.new(player_1 = Players::Human.new(playToken),player_2 = Players::Computer.new("O"))
+      @game.play
+    else
+      @game = Game.new(player_1 = Players::Human.new(playToken),player_2 = Players::Computer.new("X"))
+      @game.play
+    end
   end
 
-  def player_1=(player)
-    @player_1 = player
-    return @player_1
+  def p_v_p
+    puts "Player One: X or O?"
+    playToken = gets.chomp()
+    if playToken == "X"
+      @game = Game.new(player_1 = Players::Human.new(playToken),player_2 = Players::Human.new("O"))
+      @game.play
+    else
+      @game = Game.new(player_1 = Players::Human.new(playToken),player_2 = Players::Human.new("X"))
+      @game.play
+    end
   end
 
-  def player_1
-    return @player_1
+  def player_setup
+    puts "How many players?"
+    players = gets.chomp()
+    if players == "0"
+      comp_v_comp
+    elsif players == "1"
+      p_v_comp
+    elsif players == "2"
+      p_v_p
+    end
   end
 
-  def player_2=(player)
-    @player_2 = player
-    return @player_2
-  end
-
-  def player_2
-    return @player_2
+  def start
+    puts "Welcome to Tic-Tac-Toe!"
+    player_setup
   end
 
   def current_player
@@ -86,15 +107,28 @@ class Game
   end
 
   def turn
-    turnEntry = current_player.move(self).to_i
-
-    if @board.cells[turnEntry-1] == " "
-      @board.cells[turnEntry-1] = current_player.token
+    turnEntry = current_player.move(@board).to_i
+    puts "Current Player: #{current_player.token}"
+    if @board.valid_move?(turnEntry)
+      @board.update(turnEntry,current_player)
     else
-      puts 'Invalid move, try again'
-      self.turn
+      puts "Invalid"
+      @board.display
+      turn
     end
     
+  end
+
+  def play
+    if !over?
+      @board.display
+      turn
+      play
+    elsif draw?
+      puts "Cat's Game!"
+    elsif won?
+      puts "Congratulations #{winner}!"
+    end
   end
 
 end
