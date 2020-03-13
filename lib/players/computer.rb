@@ -6,7 +6,7 @@ class Computer < Player
         if board.valid_move?(computer_move)
             computer_move.to_s
         else
-            self.move
+            self.move(board)
         end
     end
     

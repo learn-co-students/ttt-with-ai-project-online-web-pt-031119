@@ -18,7 +18,6 @@ class Game
     end
 
     def won?
-            # array = []
             WIN_COMBINATIONS.each do |combination|
                 index_1 = combination[0]
                 index_2 = combination[1]
@@ -29,14 +28,6 @@ class Game
                 if position_1 == position_2 && position_2 == position_3 && position_1 != " "
                    return combination  
                 end
-                # combination.each do |number|
-                #     array << self.board.cells[number]
-                #     if array.uniq.size == 1 && array.size == 3
-                #         return combination.join(', ')
-                #     else
-                #        return false
-                #     end
-                # end
             end
             false
     end
@@ -87,6 +78,37 @@ class Game
             self.board.update(current_move, self.current_player)
             self.board.display
             self.board.turn_count
+        end
+    end
+
+    def call
+        puts "Welcome, Enjoy the game!"
+        puts "What kind of game do you want to play"
+        puts "0, 1 or 2 players?"
+        answer = gets.chomp
+        if answer == "0"
+          game = Game.new(Players::Computer.new("X"), Players::Computer.new("O"))
+        elsif answer == "1"
+          game = Game.new(Players::Human.new("X"), Players::Computer.new("O"))
+        elsif answer == "2"
+          game = Game.new(Players::Human.new("X"), Players::Human.new("O"))
+        else
+          puts "not a valid answer, try again!"
+          self.call
+        end
+        while !game.over?
+            game.play
+        end
+        puts "Would you like to play again? type Y if yes"
+        puts "type exit if you want to leave"
+        new_game = gets.chomp
+        if new_game == "Y"
+            self.call
+        else
+            while new_game != "exit"
+                puts "What would you like to do?"
+                new_game = gets.chomp 
+               end
         end
     end
 end
